@@ -92,27 +92,34 @@ def derivadas(query: str) -> str:
     except Exception:
         raise ValueError(f"error al integrarr {Exception}")
     
-def integrate(query:str) -> str:
+def integrate_expression(query: str) -> str:
+    """
+    Calcula la integral indefinida de una expresión.
+    """
     try:
         expr = sympify(query)
         variables = expr.free_symbols
         
         if not variables:
-            # Integral de una constante (ej. "5" -> "5*x")
+            # Integral de una constante (ej. "5")
             var = symbols('x') # Asume 'x'
-            return str(integrate(expr, var))
+            # CORRECCIÓN: Usamos el método .integrate()
+            integral = expr.integrate(var)
+            return str(integral)
             
         # Integra con respecto a la primera variable que encuentre
         var = list(variables)[0] 
-        integral = integrate(expr, var)
+        # CORRECCIÓN: Usamos el método .integrate()
+        integral = expr.integrate(var)
         
-        return str(integral) # Devuelve el resultado como string
+        return str(integral)
         
     except SympifyError:
         raise ValueError("Expresión matemática no válida.")
     except Exception as e:
+        # Esto nos dará más detalles en la terminal si vuelve a fallar
+        print(f"Error original de SymPy: {e}") 
         raise ValueError(f"Error al integrar: {str(e)}")
-
 
 
 '''
@@ -134,10 +141,11 @@ class MathQuery(BaseModel):
 class MathSolution(BaseModel):
     query: str
     solution: list
+
 #Para las integrales y las derivadas (que tienen otro formato de respuesta)
 class MathResult(BaseModel):
     query:str
-    operation:set
+    operation:str
     result:str
 
 
@@ -175,7 +183,7 @@ async def api_integrate(request: MathQuery, background_tasks: BackgroundTasks):
     """
     try:
         # 1. Llama al "motor" de integrales
-        result_str = integrate(request.query)
+        result_str = integrate_expression(request.query)
         
         # 2. Emite el evento
         background_tasks.add_task(evento, request.query, result_str)
