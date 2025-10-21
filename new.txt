@@ -1,0 +1,11 @@
+Esto hace que tu API sea clara y cumpla con los estándares REST:
+
+POST /api/v1/solve/ (Para resolver ecuaciones, ya lo tienes)
+
+POST /api/v1/differentiate/ (Para derivadas)
+
+POST /api/v1/integrate/ (Para integrales)
+
+
+
+

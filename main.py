@@ -18,7 +18,7 @@ POST: Nos dirigimos a test_main.py para hacer tests.
 import pika
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
-from sympy import solve, sympify
+from sympy import solve, sympify, diff, integrate, symbols
 from sympy.core.sympify import SympifyError
 import os
 rabbit_host = os.getenv('RABBITMQ_HOST', 'localhost')
@@ -74,7 +74,44 @@ def calculadora(query: str) -> list:
     
     except Exception:
         raise ValueError(f"Error, no se pudo resolver la ecuación {Exception}")
+
+def derivadas(query: str) -> str:
+    try:
+        expr = sympify(query) #Convierte el string en expresion matematica.
+        variables = expr.free_symbols #Identifica variables
+        
+        if len(variables) == 0:
+            #Caso derivada de una cte
+            return 0
+        var= list(variables)[0]
+        derivate = diff(expr, var)
+        return str(derivate)
+    #Manejo de errores
+    except SympifyError:
+        raise ValueError ("Expresión no válida")
+    except Exception:
+        raise ValueError(f"error al integrarr {Exception}")
     
+def integrate(query:str) -> str:
+    try:
+        expr = sympify(query)
+        variables = expr.free_symbols
+        
+        if not variables:
+            # Integral de una constante (ej. "5" -> "5*x")
+            var = symbols('x') # Asume 'x'
+            return str(integrate(expr, var))
+            
+        # Integra con respecto a la primera variable que encuentre
+        var = list(variables)[0] 
+        integral = integrate(expr, var)
+        
+        return str(integral) # Devuelve el resultado como string
+        
+    except SympifyError:
+        raise ValueError("Expresión matemática no válida.")
+    except Exception as e:
+        raise ValueError(f"Error al integrar: {str(e)}")
 
 
 
@@ -97,6 +134,11 @@ class MathQuery(BaseModel):
 class MathSolution(BaseModel):
     query: str
     solution: list
+#Para las integrales y las derivadas (que tienen otro formato de respuesta)
+class MathResult(BaseModel):
+    query:str
+    operation:set
+    result:str
 
 
 '''
@@ -120,6 +162,48 @@ async def api_solve_equation(request: MathQuery, background_tasks: BackgroundTas
     
 
     #Manejo de errores
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
+    
+@app.post("/api/v1/integrate/", response_model=MathResult)
+async def api_integrate(request: MathQuery, background_tasks: BackgroundTasks):
+    """
+    Endpoint de la API para calcular una integral indefinida.
+    Emite un evento de la transacción en segundo plano.
+    """
+    try:
+        # 1. Llama al "motor" de integrales
+        result_str = integrate(request.query)
+        
+        # 2. Emite el evento
+        background_tasks.add_task(evento, request.query, result_str)
+        
+        # 3. Devuelve la respuesta
+        return MathResult(query=request.query, operation="integral", result=result_str)
+    
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
+    
+@app.post("/api/v1/differentiate/", response_model=MathResult)
+async def api_derivadas(request: MathQuery, background_tasks: BackgroundTasks):
+    """
+    Endpoint de la API para calcular una derivada.
+    Emite un evento de la transacción en segundo plano.
+    """
+    try:
+        # 1. Llama al "motor" de derivadas
+        result_str = derivadas(request.query)
+        
+        # 2. Emite el evento
+        background_tasks.add_task(evento, request.query, result_str)
+        
+        # 3. Devuelve la respuesta
+        return MathResult(query=request.query, operation="derivative", result=result_str)
+    
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
