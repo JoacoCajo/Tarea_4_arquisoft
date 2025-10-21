@@ -3,21 +3,17 @@
 version: '3.8'
 
 services:
-  # Servicio 1: Nuestra API de FastAPI
   api:
-    build: .  # Construye la imagen usando el Dockerfile en esta carpeta
+    build: .  
     ports:
-      - "8003:8000"  # Mapea el puerto 8000 de tu máquina al 8000 del contenedor
+      - "8003:8000"  
     environment:
-      # Le decimos a Pika (en main.py) que el host de RabbitMQ
-      # se llama 'rabbitmq', no 'localhost'
       - RABBITMQ_HOST=rabbitmq
     depends_on:
-      - rabbitmq  # No iniciar la API hasta que RabbitMQ esté listo
+      - rabbitmq  
 
-  # Servicio 2: El gestor de eventos RabbitMQ
   rabbitmq:
     image: rabbitmq:3-management
     ports:
-      - "5672:5672"  # Puerto para que Pika se conecte
-      - "15672:15672" # Puerto para la interfaz web de admin (opcional)
+      - "5672:5672"  
+      - "15672:15672" 
