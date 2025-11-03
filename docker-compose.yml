@@ -1,4 +1,3 @@
-# docker-compose.yml
 
 version: '3.8'
 
@@ -10,7 +9,17 @@ services:
     environment:
       - RABBITMQ_HOST=rabbitmq
     depends_on:
-      - rabbitmq  
+      - rabbitmq
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
+    consumer:
+      build: .
+      environment:
+        - RABBITMQ_HOST=rabbitmq
+      depends_on:
+        - rabbitmq
+      command: ["python" , "consumer.py"]
 
   rabbitmq:
     image: rabbitmq:3-management

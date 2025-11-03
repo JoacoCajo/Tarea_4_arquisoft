@@ -24,7 +24,7 @@ import os
 rabbit_host = os.getenv('RABBITMQ_HOST', 'localhost')
 
 
-#Lógica de evento!
+#Lógica de evento! (productor)
 def evento (query: str, solution: list):
     try: 
         #inicialización
