@@ -2,7 +2,7 @@ Microservicio "Servicio de chatbot de cálculo" para la asignatura Arquitectura 
 Profesor: Rafik Mas''Ad Nasra
 Nombres: Joaquin Viveros, Jorge Aceval
 
-Roles: 202273586-4 y 202273586-4 respectivamente
+Roles: 202273586-4 y 202273513-9 respectivamente
 
 Instrucciones de ejecución:
 1. Iniciar un virtual environment que contenga las siguientes librerias: pika, fastapi,pydantic,sympy, ASGI uvicorn
