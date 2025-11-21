@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: calculadora
+spec:
+  selector:
+    app: api
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  labels:
+    app: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: jorgeaceval/calculadora:1.0
+          ports:
+            - containerPort: 8000
+          env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+          command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
