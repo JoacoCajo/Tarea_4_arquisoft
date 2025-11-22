@@ -1,0 +1,18 @@
+# Respuesta de /solve/
+type MathSolution {
+  query: String!
+  solution: [String!]!
+}
+
+# Respuesta de /integrate/ y /differentiate/
+type MathResult {
+  query: String!
+  operation: String!
+  result: String!
+}
+
+type Query {
+  resolverEcuacion(query: String!): MathSolution
+  resolverIntegral(query: String!): MathResult
+  resolverDerivada(query: String!): MathResult
+}

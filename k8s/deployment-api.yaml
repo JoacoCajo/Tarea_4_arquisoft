@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: jorgeaceval/calculadora:1.0
+          image: jorgeaceval/calculadora:1.6
           ports:
             - containerPort: 8000
           env:
