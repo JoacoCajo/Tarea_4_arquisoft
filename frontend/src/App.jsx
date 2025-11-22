@@ -138,8 +138,8 @@ export default function MathChatbot() {
             <div className="flex items-center gap-3">
               <Calculator className="w-8 h-8" />
               <div>
-                <h1 className="text-2xl font-bold">Math Chatbot</h1>
-                <p className="text-blue-100 text-sm">Asistente de matemáticas con IA</p>
+                <h1 className="text-2xl font-bold">Asistente matemático</h1>
+                <p className="text-blue-100 text-sm">Chatbot de calculo</p>
               </div>
             </div>
             <button
