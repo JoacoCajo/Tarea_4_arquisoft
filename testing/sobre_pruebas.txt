@@ -1,0 +1,12 @@
+Pre: Instalar los paquetes en el entorno virtual, luego, iniciar virtualenv con:
+source .venv/bin/activate
+e instalar los requerimientos.
+
+1.Instalar kubectl
+2. Configurar el cluster de forma segura.
+3. Acceder a la api para hacer pruebas, con el siguiente comando: kubectl port-forward -n calculadora svc/calculadora 8003:8000, luego, abrir otra terminal
+4. Ejecutar las pruebas unitarias a través de la nueva consola:
+
+    #Para ejecutar las pruebas de integración:
+        1.Ejecutamos las pruebas con el comando: pytest test_integracion.py.
+
